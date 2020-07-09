@@ -37,7 +37,7 @@ import org.entando.kubernetes.model.EntandoCustomResourceStatus;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EntandoComponentBundle extends EntandoBaseCustomResource<EntandoComponentBundleSpec> {
 
-    public static final String CRD_NAME = "EntandoComponentBundles.entando.org";
+    public static final String CRD_NAME = "entandocomponentbundles.entando.org";
 
     public EntandoComponentBundle() {
         this(null);

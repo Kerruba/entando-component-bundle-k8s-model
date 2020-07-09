@@ -20,10 +20,9 @@ public abstract class EntandoComponentBundleTagFluent<N extends EntandoComponent
 
     private String version;
     private String integrity;
-    private String shasum;
-    private String tarball;
+    private String timestamp;
 
-    public EntandoComponentBundleTagFluent(EntandoComponentBundleTag tag) {
+    public EntandoComponentBundleTagFluent(EntandoComponentBundleVersion tag) {
         this.version = tag.getVersion();
         this.integrity = tag.getIntegrity();
         this.shasum = tag.getShasum();
@@ -33,8 +32,8 @@ public abstract class EntandoComponentBundleTagFluent<N extends EntandoComponent
     public EntandoComponentBundleTagFluent() {
     }
 
-    public EntandoComponentBundleTag build() {
-        return new EntandoComponentBundleTag(version, integrity, shasum, tarball);
+    public EntandoComponentBundleVersion build() {
+        return new EntandoComponentBundleVersion(version, integrity, shasum, tarball);
     }
 
     public N withVersion(String version) {

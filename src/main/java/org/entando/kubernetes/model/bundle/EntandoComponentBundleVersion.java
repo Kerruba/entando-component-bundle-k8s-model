@@ -33,21 +33,19 @@ import java.io.Serializable;
         setterVisibility = Visibility.NONE)
 @RegisterForReflection
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class EntandoComponentBundleTag implements Serializable {
+public class EntandoComponentBundleVersion implements Serializable {
 
     private String version;
     private String integrity;
-    private String shasum;
-    private String tarball;
+    private String timestamp;
 
-    public EntandoComponentBundleTag(String version, String integrity, String shasum, String tarball) {
+    public EntandoComponentBundleVersion(String version, String integrity, String timestamp) {
         this.version = version;
         this.integrity = integrity;
-        this.shasum = shasum;
-        this.tarball = tarball;
+        this.timestamp = timestamp;
     }
 
-    public EntandoComponentBundleTag() {
+    public EntandoComponentBundleVersion() {
     }
 
     public String getVersion() {
@@ -58,11 +56,8 @@ public class EntandoComponentBundleTag implements Serializable {
         return integrity;
     }
 
-    public String getShasum() {
-        return shasum;
+    public String getTimestamp() {
+        return this.timestamp;
     }
 
-    public String getTarball() {
-        return tarball;
-    }
 }

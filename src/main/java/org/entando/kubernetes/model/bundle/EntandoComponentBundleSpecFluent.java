@@ -23,21 +23,31 @@ import java.util.stream.Collectors;
 
 public abstract class EntandoComponentBundleSpecFluent<A extends EntandoComponentBundleSpecFluent> {
 
-    protected EntandoComponentBundleDetailsBuilder details;
-    protected List<EntandoComponentBundleTagBuilder> tags;
+    protected String code;
+    protected String description;
+    protected BundleAuthor author;
+    protected String organization;
+    protected String thumbnail;
+    protected List<String> images = new ArrayList<>();
+    protected String url;
+    protected List<EntandoComponentBundleVersionsBuilder> versions = new ArrayList<>();
 
     public EntandoComponentBundleSpecFluent(EntandoComponentBundleSpec spec) {
-        this.details = new EntandoComponentBundleDetailsBuilder(spec.getDetails());
-        this.tags = createTagBuilders(spec.getTags());
+        this.code = spec.getCode();
+        this.description = spec.getDescription();
+        this.author = spec.getAuthor();
+        this.organization = spec.getOrganization();
+        this.thumbnail = spec.getThumbnail();
+        this.images = spec.getImages();
+        this.url = spec.getUrl();
+        this.versions = createTagBuilders(spec.getVersions());
     }
 
     public EntandoComponentBundleSpecFluent() {
-        this.details = new EntandoComponentBundleDetailsBuilder();
-        this.tags = new ArrayList<>();
     }
 
-    private List<EntandoComponentBundleTagBuilder> createTagBuilders(List<EntandoComponentBundleTag> tags) {
-        return new ArrayList<>(tags.stream().map(EntandoComponentBundleTagBuilder::new).collect(Collectors.toList()));
+    private List<EntandoComponentBundleVersionsBuilder> createTagBuilders(List<EntandoComponentBundleVersion> versions) {
+        return new ArrayList<>(versions.stream().map(EntandoComponentBundleVersionsBuilder::new).collect(Collectors.toList()));
     }
 
     public DetailsNested<A> withNewDetails() {
@@ -52,8 +62,8 @@ public abstract class EntandoComponentBundleSpecFluent<A extends EntandoComponen
         return new TagNested<>(thisAsA());
     }
 
-    public A addToTags(EntandoComponentBundleTag tag) {
-        this.tags.add(new EntandoComponentBundleTagBuilder(tag));
+    public A addToTags(EntandoComponentBundleVersion tag) {
+        this.versions.add(new EntandoComponentBundleVersionsBuilder(tag));
         return thisAsA();
     }
 
@@ -69,11 +79,11 @@ public abstract class EntandoComponentBundleSpecFluent<A extends EntandoComponen
 
     public EntandoComponentBundleSpec build() {
         return new EntandoComponentBundleSpec(this.details.build(),
-                this.tags.stream().map(EntandoComponentBundleTagFluent::build).collect(Collectors.toList()));
+                this.versions.stream().map(EntandoComponentBundleTagFluent::build).collect(Collectors.toList()));
     }
 
-    public A withTags(List<EntandoComponentBundleTag> tags) {
-        this.tags = createTagBuilders(tags);
+    public A withTags(List<EntandoComponentBundleVersion> tags) {
+        this.versions = createTagBuilders(tags);
         return thisAsA();
     }
 
