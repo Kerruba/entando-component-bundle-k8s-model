@@ -14,22 +14,15 @@
  *
  */
 
-package org.entando.kubernetes.model.interprocesstest;
+package org.entando.kubernetes.model.bundle;
 
-import io.fabric8.kubernetes.client.AutoAdaptableKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import org.entando.kubernetes.model.AbstractEntandoDatabaseServiceTest;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Tags;
+public class EntandoComponentBundleVersionsBuilder extends
+        EntandoComponentBundleVersionFluent<EntandoComponentBundleVersionsBuilder> {
 
-@Tags({@Tag("inter-process"),@Tag("pre-deployment") })
-public class EntandoDatabaseServiceIntegratedTest extends AbstractEntandoDatabaseServiceTest {
-
-    private final KubernetesClient client = new AutoAdaptableKubernetesClient();
-
-    @Override
-    public KubernetesClient getClient() {
-        return client;
+    public EntandoComponentBundleVersionsBuilder(EntandoComponentBundleVersion version) {
+        super(version);
     }
 
+    public EntandoComponentBundleVersionsBuilder() {
+    }
 }

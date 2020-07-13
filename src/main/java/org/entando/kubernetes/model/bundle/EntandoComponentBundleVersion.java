@@ -14,7 +14,7 @@
  *
  */
 
-package org.entando.kubernetes.model;
+package org.entando.kubernetes.model.bundle;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -23,8 +23,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.fabric8.kubernetes.api.model.extensions.IngressStatus;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import java.io.Serializable;
 
 @JsonSerialize
 @JsonDeserialize
@@ -33,23 +33,43 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
         setterVisibility = Visibility.NONE)
 @RegisterForReflection
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class WebServerStatus extends AbstractServerStatus {
+public class EntandoComponentBundleVersion implements Serializable {
 
-    private IngressStatus ingressStatus;
+    private String version;
+    private String integrity;
+    private String timestamp;
 
-    public WebServerStatus() {
-        super();
+    public EntandoComponentBundleVersion(String version, String integrity, String timestamp) {
+        this.version = version;
+        this.integrity = integrity;
+        this.timestamp = timestamp;
     }
 
-    public WebServerStatus(String qualifier) {
-        super(qualifier);
+    public EntandoComponentBundleVersion() {
     }
 
-    public IngressStatus getIngressStatus() {
-        return ingressStatus;
+    public void setVersion(String version) {
+        this.version = version;
     }
 
-    public void setIngressStatus(IngressStatus ingressStatus) {
-        this.ingressStatus = ingressStatus;
+    public void setIntegrity(String integrity) {
+        this.integrity = integrity;
     }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String getIntegrity() {
+        return integrity;
+    }
+
+    public String getTimestamp() {
+        return this.timestamp;
+    }
+
 }

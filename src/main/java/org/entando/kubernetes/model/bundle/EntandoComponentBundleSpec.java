@@ -39,24 +39,68 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EntandoComponentBundleSpec implements Serializable {
 
-    private EntandoComponentBundleDetails details;
-    private List<EntandoComponentBundleTag> tags = new ArrayList<>();
+    private String code;
+    private String description;
+    private String title;
+    private EntandoComponentBundleAuthor author;
+    private String organization;
+    private String thumbnail;
+    private List<EntandoComponentBundleImage> images = new ArrayList<>();
+    private String url;
+    private List<EntandoComponentBundleVersion> versions = new ArrayList<>();
 
     public EntandoComponentBundleSpec() {
         super();
     }
 
     @SuppressWarnings("unchecked")
-    public EntandoComponentBundleSpec(EntandoComponentBundleDetails details, List<EntandoComponentBundleTag> tags) {
-        this.details = details;
-        this.tags = coalesce(tags, this.tags);
+    public EntandoComponentBundleSpec(String code, String title, String description, EntandoComponentBundleAuthor author,
+            String organization, String thumbnail, List<EntandoComponentBundleImage> images, String url,
+            List<EntandoComponentBundleVersion> versionList) {
+        this.code = code;
+        this.title = title;
+        this.description = description;
+        this.author = author;
+        this.organization = organization;
+        this.thumbnail = thumbnail;
+        this.images = coalesce(images, this.images);
+        this.url = url;
+        this.versions = coalesce(versionList, this.versions);
     }
 
-    public EntandoComponentBundleDetails getDetails() {
-        return details;
+    public String getCode() {
+        return code;
     }
 
-    public List<EntandoComponentBundleTag> getTags() {
-        return tags;
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public EntandoComponentBundleAuthor getAuthor() {
+        return author;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public List<EntandoComponentBundleImage> getImages() {
+        return images;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public List<EntandoComponentBundleVersion> getVersions() {
+        return this.versions;
     }
 }

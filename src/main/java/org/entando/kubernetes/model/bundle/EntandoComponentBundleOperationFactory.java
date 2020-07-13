@@ -18,12 +18,11 @@ package org.entando.kubernetes.model.bundle;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.internal.CustomResourceOperationsImpl;
-import org.entando.kubernetes.model.EntandoCustomResourceResolver;
+import org.entando.kubernetes.model.EntandoComponentBundleCustomResourceResolver;
 
 public final class EntandoComponentBundleOperationFactory {
 
-    private static EntandoCustomResourceResolver<EntandoComponentBundle, EntandoComponentBundleList, DoneableEntandoComponentBundle> resolver =
-            new EntandoCustomResourceResolver<>(EntandoComponentBundle.class, EntandoComponentBundleList.class, DoneableEntandoComponentBundle.class);
+    private static EntandoComponentBundleCustomResourceResolver resolver = new EntandoComponentBundleCustomResourceResolver();
 
     private EntandoComponentBundleOperationFactory() {
     }

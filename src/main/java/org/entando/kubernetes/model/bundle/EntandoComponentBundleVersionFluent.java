@@ -16,25 +16,23 @@
 
 package org.entando.kubernetes.model.bundle;
 
-public abstract class EntandoComponentBundleTagFluent<N extends EntandoComponentBundleTagFluent<N>> {
+public abstract class EntandoComponentBundleVersionFluent<N extends EntandoComponentBundleVersionFluent<N>> {
 
     private String version;
     private String integrity;
-    private String shasum;
-    private String tarball;
+    private String timestamp;
 
-    public EntandoComponentBundleTagFluent(EntandoComponentBundleTag tag) {
+    public EntandoComponentBundleVersionFluent(EntandoComponentBundleVersion tag) {
         this.version = tag.getVersion();
         this.integrity = tag.getIntegrity();
-        this.shasum = tag.getShasum();
-        this.tarball = tag.getTarball();
+        this.timestamp = tag.getTimestamp();
     }
 
-    public EntandoComponentBundleTagFluent() {
+    public EntandoComponentBundleVersionFluent() {
     }
 
-    public EntandoComponentBundleTag build() {
-        return new EntandoComponentBundleTag(version, integrity, shasum, tarball);
+    public EntandoComponentBundleVersion build() {
+        return new EntandoComponentBundleVersion(version, integrity, timestamp);
     }
 
     public N withVersion(String version) {
@@ -47,13 +45,8 @@ public abstract class EntandoComponentBundleTagFluent<N extends EntandoComponent
         return thisAsN();
     }
 
-    public N withShasum(String shasum) {
-        this.shasum = shasum;
-        return thisAsN();
-    }
-
-    public N withTarball(String tarball) {
-        this.tarball = tarball;
+    public N withTimestamp(String timestamp) {
+        this.timestamp = timestamp;
         return thisAsN();
     }
 

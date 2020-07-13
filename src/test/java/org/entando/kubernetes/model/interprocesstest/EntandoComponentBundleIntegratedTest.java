@@ -14,13 +14,22 @@
  *
  */
 
-package org.entando.kubernetes.model;
+package org.entando.kubernetes.model.interprocesstest;
 
-import java.util.Optional;
+import io.fabric8.kubernetes.client.AutoAdaptableKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import org.entando.kubernetes.model.AbstractEntandoDeBundleTest;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
 
-public interface HasIngress {
+@Tags({@Tag("inter-process"),@Tag("pre-deployment") })
+public class EntandoComponentBundleIntegratedTest extends AbstractEntandoDeBundleTest {
 
-    Optional<String> getIngressHostName();
+    private final KubernetesClient client = new AutoAdaptableKubernetesClient();
 
-    Optional<String> getTlsSecretName();
+    @Override
+    public KubernetesClient getClient() {
+        return client;
+    }
+
 }

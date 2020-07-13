@@ -20,17 +20,17 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
-import org.entando.kubernetes.model.AbstractEntandoPluginTest;
-import org.entando.kubernetes.model.plugin.EntandoPluginBuilder;
+import org.entando.kubernetes.model.AbstractEntandoDeBundleTest;
+import org.entando.kubernetes.model.bundle.EntandoComponentBundleBuilder;
 import org.junit.Rule;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 
-@EnableRuleMigrationSupport
 @Tags({@Tag("in-process"),@Tag("pre-deployment") })
-public class EntandoPluginMockedTest extends AbstractEntandoPluginTest {
+@EnableRuleMigrationSupport
+public class EntandoComponentBundleMockedTest extends AbstractEntandoDeBundleTest {
 
     @Rule
     public KubernetesServer server = new KubernetesServer(false, true);
@@ -42,9 +42,12 @@ public class EntandoPluginMockedTest extends AbstractEntandoPluginTest {
 
     @Test
     public void testOverriddenEqualsMethods() {
-        //The ObjectMetaBuilder's equals method is broken. There is no way to fix it. 
+        //The ObjectMetaBuilder's equals method is broken. There is no way to fix it.
         // These tests just verify that inequality corresponds with hashcode
-        EntandoPluginBuilder builder = new EntandoPluginBuilder().editMetadata().withNamespace("ns").withName("name").endMetadata();
+        EntandoComponentBundleBuilder builder = new EntandoComponentBundleBuilder()
+                .editMetadata()
+                .withNamespace("ns").withName("name")
+                .endMetadata();
         assertNotEquals(builder.editMetadata(), builder.editMetadata());
         assertNotEquals(builder.editMetadata().hashCode(), builder.editMetadata().hashCode());
     }

@@ -17,153 +17,169 @@
 package org.entando.kubernetes.model;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import io.fabric8.kubernetes.client.CustomResourceList;
 import io.fabric8.kubernetes.client.dsl.internal.CustomResourceOperationsImpl;
-import java.util.Arrays;
-import java.util.Collections;
 import org.entando.kubernetes.model.bundle.DoneableEntandoComponentBundle;
-import org.entando.kubernetes.model.bundle.EntandoDeBundle;
-import org.entando.kubernetes.model.bundle.EntandoDeBundleBuilder;
-import org.entando.kubernetes.model.bundle.EntandoDeBundleTagBuilder;
+import org.entando.kubernetes.model.bundle.EntandoComponentBundle;
+import org.entando.kubernetes.model.bundle.EntandoComponentBundleBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public abstract class AbstractEntandoDeBundleTest implements CustomResourceTestUtil {
 
-    public static final String MY_BUNDLE = "my-bundle";
-    public static final String MY_DESCRIPTION = "my-description";
-    public static final String SOME_TAG = "someTag";
-    public static final String SOME_VALUE = "someValue";
-    public static final String MY_KEYWORD = "my-keyword";
-    public static final String MY_VERSION = "0.0.1";
-    public static final String MY_INTEGRITY = "asdfasdf";
-    public static final String MY_SHASUM = "AFGAGARG";
-    public static final String MY_TARBALL = "http://npm.com/mytarball.tgz";
-    public static final String MY_THUMBNAIL = "Jyt6tAV2CLeDid2LiT34tA";
-    protected static final String MY_NAMESPACE = TestConfig.calculateNameSpace("my-namespace");
+    public static final String CODE = "my-bundle";
+    public static final String TITLE = "This is the bundle title";
+    public static final String DESCRIPTION = "This is the bundle description";
+    public static final String AUTHOR_NAME = "Jack Bauer";
+    public static final String AUTHOR_EMAIL = "jbauer@24.com";
+    public static final String ORGANIZATION = "ctu";
+    public static final String REPO_URL = "http://inexistent.entando.com/my-repo.git";
+    public static final String VERSION_1_VERSION = "0.0.1";
+    public static final String VERSION_1_INTEGRITY = "asdfasdf";
+    public static final String VERSION_1_TIMESTAMP = "2020-07-13T09:00:00Z";
+    public static final String VERSION_2_VERSION = "0.0.2";
+    public static final String VERSION_2_INTEGRITY = "";
+    public static final String VERSION_2_TIMESTAMP = "2020-07-15T08:00:00Z";
+    public static final String THUMBNAIL = "Jyt6tAV2CLeDid2LiT34tA";
+    public static final String IMAGE_1_URL = "http://example.com/images/1";
+    public static final String IMAGE_2_URL = "http://example.com/images/2";
+    protected static final String NAMESPACE = TestConfig.calculateNameSpace("my-namespace");
     private EntandoResourceOperationsRegistry registry;
 
     @BeforeEach
-    public void deleteEntandoDeBundles() {
+    public void deleteAllEntandoComponentBundles() {
         this.registry = new EntandoResourceOperationsRegistry(getClient());
-        prepareNamespace(entandoDeBundles(), MY_NAMESPACE);
+        prepareNamespace(entandoComponentBundles(), NAMESPACE);
     }
 
     @Test
-    public void testCreateEntandoDeBundle() {
+    public void testCreateEntandoComponentBundle() {
         //Given
-        EntandoDeBundle entandoDeBundle = new EntandoDeBundleBuilder()
-                .withNewMetadata().withName(MY_BUNDLE)
-                .withNamespace(MY_NAMESPACE)
+        EntandoComponentBundle ecb = new EntandoComponentBundleBuilder()
+                .withNewMetadata().withName(CODE)
+                .withNamespace(NAMESPACE)
                 .endMetadata()
                 .withNewSpec()
-                .withNewDetails()
-                .withDescription(MY_DESCRIPTION)
-                .withName(MY_BUNDLE)
-                .withThumbnail(MY_THUMBNAIL)
-                .addNewKeyword(MY_KEYWORD)
-                .addNewVersion(MY_VERSION)
-                .addNewDistTag(SOME_TAG, SOME_VALUE)
-                .endDetails()
-                .addNewTag()
-                .withIntegrity(MY_INTEGRITY)
-                .withShasum(MY_SHASUM)
-                .withTarball(MY_TARBALL)
-                .withVersion(MY_VERSION)
-                .endTag()
+                .withCode(CODE)
+                .withTitle(TITLE)
+                .withDescription(DESCRIPTION)
+                .withThumbnail(THUMBNAIL)
+                .withNewAuthor()
+                .withName(AUTHOR_NAME)
+                .withEmail(AUTHOR_EMAIL)
+                .endAuthor()
+                .withNewImages()
+                .addImageUrl(IMAGE_1_URL)
+                .addImageUrl(IMAGE_2_URL)
+                .endImages()
+                .withOrganization(ORGANIZATION)
+                .withUrl(REPO_URL)
+                .addNewVersion()
+                .withTimestamp(VERSION_1_TIMESTAMP)
+                .withIntegrity(VERSION_1_INTEGRITY)
+                .withVersion(VERSION_1_VERSION)
+                .endVersion()
+                .addNewVersion()
+                .withVersion(VERSION_2_VERSION)
+                .withIntegrity(VERSION_2_INTEGRITY)
+                .withTimestamp(VERSION_2_TIMESTAMP)
+                .endVersion()
                 .endSpec()
                 .build();
-        entandoDeBundles().inNamespace(MY_NAMESPACE).createNew().withMetadata(entandoDeBundle.getMetadata())
-                .withSpec(entandoDeBundle.getSpec()).done();
+        entandoComponentBundles().inNamespace(NAMESPACE).createNew().withMetadata(ecb.getMetadata())
+                .withSpec(ecb.getSpec()).done();
         //When
-        EntandoDeBundle actual = entandoDeBundles().inNamespace(MY_NAMESPACE).withName(MY_BUNDLE).get();
+        EntandoComponentBundle actual = entandoComponentBundles().inNamespace(NAMESPACE).withName(CODE).get();
 
         //Then
-        assertThat(actual.getSpec().getDetails().getName(), is(MY_BUNDLE));
-        assertThat(actual.getSpec().getDetails().getDescription(), is(MY_DESCRIPTION));
-        assertThat(actual.getSpec().getDetails().getThumbnail(), is(MY_THUMBNAIL));
-        assertThat(actual.getSpec().getDetails().getDistTags(), is(Collections.singletonMap(SOME_TAG, SOME_VALUE)));
-        assertThat(actual.getSpec().getDetails().getKeywords(), is(Collections.singletonList(MY_KEYWORD)));
-        assertThat(actual.getSpec().getDetails().getVersions(), is(Collections.singletonList(MY_VERSION)));
-        assertThat(actual.getSpec().getTags().get(0).getIntegrity(), is(MY_INTEGRITY));
-        assertThat(actual.getSpec().getTags().get(0).getShasum(), is(MY_SHASUM));
-        assertThat(actual.getSpec().getTags().get(0).getTarball(), is(MY_TARBALL));
-        assertThat(actual.getSpec().getTags().get(0).getVersion(), is(MY_VERSION));
-        assertThat(actual.getMetadata().getName(), is(MY_BUNDLE));
+        assertThat(actual.getMetadata().getName(), is(CODE));
+        assertThat(actual.getSpec().getCode(), is(CODE));
+        assertThat(actual.getSpec().getDescription(), is(DESCRIPTION));
+        assertThat(actual.getSpec().getTitle(), is(TITLE));
+        assertThat(actual.getSpec().getAuthor().getName(), is(AUTHOR_NAME));
+        assertThat(actual.getSpec().getAuthor().getEmail(), is(AUTHOR_EMAIL));
+        assertThat(actual.getSpec().getOrganization(), is(ORGANIZATION));
+        assertThat(actual.getSpec().getUrl(), is(REPO_URL));
+        assertThat(actual.getSpec().getThumbnail(), is(THUMBNAIL));
+        assertThat(actual.getSpec().getImages(), hasSize(2));
+        assertThat(actual.getSpec().getImages().get(0).getUrl(), is(IMAGE_1_URL));
+        assertThat(actual.getSpec().getImages().get(1).getUrl(), is(IMAGE_2_URL));
+        assertThat(actual.getSpec().getVersions(), hasSize(2));
+        assertThat(actual.getSpec().getVersions().get(0).getVersion(), is(VERSION_1_VERSION));
+        assertThat(actual.getSpec().getVersions().get(0).getIntegrity(), is(VERSION_1_INTEGRITY));
+        assertThat(actual.getSpec().getVersions().get(0).getTimestamp(), is(VERSION_1_TIMESTAMP));
+        assertThat(actual.getSpec().getVersions().get(1).getVersion(), is(VERSION_2_VERSION));
+        assertThat(actual.getSpec().getVersions().get(1).getIntegrity(), is(VERSION_2_INTEGRITY));
+        assertThat(actual.getSpec().getVersions().get(1).getTimestamp(), is(VERSION_2_TIMESTAMP));
     }
 
     @Test
-    public void testEditEntandoDeBundle() {
+    public void testEdit() {
         //Given
-        EntandoDeBundle entandoApp = new EntandoDeBundleBuilder()
+        EntandoComponentBundle ecb = new EntandoComponentBundleBuilder()
                 .withNewMetadata()
-                .withName(MY_BUNDLE)
-                .withNamespace(MY_NAMESPACE)
+                .withName(CODE)
+                .withNamespace(NAMESPACE)
                 .endMetadata()
                 .withNewSpec()
-                .withNewDetails()
-                .withDescription(MY_DESCRIPTION)
-                .withName(MY_BUNDLE)
+                .withCode(CODE)
+                .withTitle(TITLE)
+                .withDescription(DESCRIPTION)
+                .withOrganization(ORGANIZATION)
                 .withThumbnail("H0cFRNTEJt8EZBcL17_iww")
-                .addNewKeyword("another-keyword")
-                .addNewVersion("0.0.2")
-                .addNewDistTag("anotherTag", "anotherValue")
-                .endDetails()
-                .addNewTag()
-                .withIntegrity("asdfasdfasdfasdsafsdfs")
-                .withShasum("1234123412341234")
-                .withTarball("sdfasdfasdfasdfas")
-                .withVersion("0.0.2")
-                .endTag()
+                .withNewImages()
+                .addImageUrl(IMAGE_1_URL)
+                .addImageUrl(IMAGE_2_URL)
+                .endImages()
+                .addNewVersion()
+                .withVersion(VERSION_1_VERSION)
+                .withTimestamp(VERSION_1_TIMESTAMP)
+                .withIntegrity(VERSION_1_INTEGRITY)
+                .endVersion()
                 .endSpec()
                 .build();
         //When
         //We are not using the mock server here because of a known bug
-        EntandoDeBundle actual = editEntandoDeBundle(entandoApp)
+        EntandoComponentBundle actual = editEntandoComponentBundle(ecb)
                 .editMetadata()
                 .endMetadata()
                 .editSpec()
-                .editDetails()
-                .withDescription(MY_DESCRIPTION)
-                .withName(MY_BUNDLE)
-                .withThumbnail(MY_THUMBNAIL)
-                .withKeywords(Arrays.asList(MY_KEYWORD))
-                .withVersions(Arrays.asList(MY_VERSION))
-                .withDistTags(Collections.singletonMap(SOME_TAG, SOME_VALUE))
-                .endDetails()
-                .withTags(Arrays.asList(new EntandoDeBundleTagBuilder()
-                        .withIntegrity(MY_INTEGRITY)
-                        .withShasum(MY_SHASUM)
-                        .withTarball(MY_TARBALL)
-                        .withVersion(MY_VERSION)
-                        .build()))
+                .withTitle("My new title")
+                .withDescription("My new description")
+                .withNewAuthor()
+                .withName(AUTHOR_NAME)
+                .withEmail(AUTHOR_EMAIL)
+                .endAuthor()
+                .withThumbnail(THUMBNAIL)
+                .withNoVersions()
+                .addNewVersion()
+                .withVersion(VERSION_2_VERSION)
+                .withIntegrity(VERSION_2_INTEGRITY)
+                .withTimestamp(VERSION_2_TIMESTAMP)
+                .endVersion()
                 .endSpec()
-                .withPhase(EntandoDeploymentPhase.STARTED)
                 .done();
         //Then
-        assertThat(actual.getSpec().getDetails().getName(), is(MY_BUNDLE));
-        assertThat(actual.getSpec().getDetails().getDescription(), is(MY_DESCRIPTION));
-        assertThat(actual.getSpec().getDetails().getThumbnail(), is(MY_THUMBNAIL));
-        assertThat(actual.getSpec().getDetails().getDistTags(), is(Collections.singletonMap(SOME_TAG, SOME_VALUE)));
-        assertThat(actual.getSpec().getDetails().getKeywords(), is(Collections.singletonList(MY_KEYWORD)));
-        assertThat(actual.getSpec().getDetails().getVersions(), is(Collections.singletonList(MY_VERSION)));
-        assertThat(actual.getSpec().getTags().get(0).getIntegrity(), is(MY_INTEGRITY));
-        assertThat(actual.getSpec().getTags().get(0).getShasum(), is(MY_SHASUM));
-        assertThat(actual.getSpec().getTags().get(0).getTarball(), is(MY_TARBALL));
-        assertThat(actual.getSpec().getTags().get(0).getVersion(), is(MY_VERSION));
-        assertThat(actual.getMetadata().getName(), is(MY_BUNDLE));
+        assertThat(actual.getSpec().getCode(), is(CODE));
+        assertThat(actual.getSpec().getTitle(), is("My new title"));
+        assertThat(actual.getSpec().getDescription(), is("My new description"));
+        assertThat(actual.getSpec().getThumbnail(), is(THUMBNAIL));
+        assertThat(actual.getSpec().getAuthor().getName(), is(AUTHOR_NAME));
+        assertThat(actual.getSpec().getAuthor().getEmail(), is(AUTHOR_EMAIL));
+        assertThat(actual.getMetadata().getName(), is(CODE));
     }
 
-    protected DoneableEntandoComponentBundle editEntandoDeBundle(EntandoDeBundle entandoApp) {
-        entandoDeBundles().inNamespace(MY_NAMESPACE).create(entandoApp);
-        return entandoDeBundles().inNamespace(MY_NAMESPACE).withName(MY_BUNDLE).edit();
+    protected DoneableEntandoComponentBundle editEntandoComponentBundle(EntandoComponentBundle cb) {
+        entandoComponentBundles().inNamespace(NAMESPACE).create(cb);
+        return entandoComponentBundles().inNamespace(NAMESPACE).withName(CODE).edit();
     }
 
-    protected CustomResourceOperationsImpl<EntandoDeBundle, CustomResourceList<EntandoDeBundle>,
-            DoneableEntandoComponentBundle> entandoDeBundles() {
-        return registry.getOperations(EntandoDeBundle.class);
+    protected CustomResourceOperationsImpl<EntandoComponentBundle, CustomResourceList<EntandoComponentBundle>,
+            DoneableEntandoComponentBundle> entandoComponentBundles() {
+        return registry.getOperations(EntandoComponentBundle.class);
     }
 
 }
