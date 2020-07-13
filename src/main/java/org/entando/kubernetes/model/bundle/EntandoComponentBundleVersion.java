@@ -48,6 +48,18 @@ public class EntandoComponentBundleVersion implements Serializable {
     public EntandoComponentBundleVersion() {
     }
 
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public void setIntegrity(String integrity) {
+        this.integrity = integrity;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public String getVersion() {
         return version;
     }

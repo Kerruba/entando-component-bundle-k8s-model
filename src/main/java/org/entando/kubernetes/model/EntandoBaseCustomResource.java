@@ -32,12 +32,7 @@ import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.client.CustomResource;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.io.Serializable;
-import org.entando.kubernetes.model.app.EntandoApp;
-import org.entando.kubernetes.model.externaldatabase.EntandoDatabaseService;
-import org.entando.kubernetes.model.infrastructure.EntandoClusterInfrastructure;
-import org.entando.kubernetes.model.keycloakserver.EntandoKeycloakServer;
-import org.entando.kubernetes.model.link.EntandoAppPluginLink;
-import org.entando.kubernetes.model.plugin.EntandoPlugin;
+import org.entando.kubernetes.model.bundle.EntandoComponentBundle;
 
 @JsonSerialize
 @JsonDeserialize
@@ -53,28 +48,21 @@ import org.entando.kubernetes.model.plugin.EntandoPlugin;
 
 )
 @JsonSubTypes({
-        @Type(value = EntandoKeycloakServer.class, name = "EntandoKeycloakServer"),
-        @Type(value = EntandoClusterInfrastructure.class, name = "EntandoClusterInfrastructure"),
-        @Type(value = EntandoApp.class, name = "EntandoApp"),
-        @Type(value = EntandoPlugin.class, name = "EntandoPlugin"),
-        @Type(value = EntandoAppPluginLink.class, name = "EntandoAppPluginLink"),
-        @Type(value = EntandoDatabaseService.class, name = "EntandoDatabaseService")
+        @Type(value = EntandoComponentBundle.class, name = "EntandoComponentBundle"),
 })
 
 public abstract class EntandoBaseCustomResource<S extends Serializable> extends CustomResource implements EntandoCustomResource {
 
     private S spec;
-    private EntandoCustomResourceStatus entandoStatus;
 
     protected EntandoBaseCustomResource() {
         super();
     }
 
-    protected EntandoBaseCustomResource(ObjectMeta objectMeta, S spec, EntandoCustomResourceStatus entandoStatus) {
+    protected EntandoBaseCustomResource(ObjectMeta objectMeta, S spec) {
         super();
         super.setMetadata(objectMeta);
         this.spec = spec;
-        this.entandoStatus = entandoStatus;
     }
 
     public S getSpec() {
@@ -85,16 +73,4 @@ public abstract class EntandoBaseCustomResource<S extends Serializable> extends 
         this.spec = spec;
     }
 
-    @Override
-    public EntandoCustomResourceStatus getStatus() {
-        if (entandoStatus == null) {
-            setStatus(new EntandoCustomResourceStatus());
-        }
-        return this.entandoStatus;
-    }
-
-    @Override
-    public void setStatus(EntandoCustomResourceStatus status) {
-        this.entandoStatus = status;
-    }
 }

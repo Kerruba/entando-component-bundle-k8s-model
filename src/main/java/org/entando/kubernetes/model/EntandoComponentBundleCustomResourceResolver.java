@@ -21,7 +21,6 @@ import static java.lang.Thread.sleep;
 
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
-import io.fabric8.kubernetes.client.CustomResourceList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.internal.CustomResourceOperationsImpl;
@@ -32,51 +31,49 @@ import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.entando.kubernetes.model.bundle.DoneableEntandoComponentBundle;
 import org.entando.kubernetes.model.bundle.EntandoComponentBundle;
+import org.entando.kubernetes.model.bundle.EntandoComponentBundleList;
 
-public class EntandoCustomResourceResolver<R extends EntandoCustomResource, L extends CustomResourceList<R>, D extends
-        DoneableEntandoCustomResource<D, R>> {
+public class EntandoComponentBundleCustomResourceResolver {
 
-    private static final Logger LOGGER = Logger.getLogger(EntandoCustomResourceResolver.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(EntandoComponentBundleCustomResourceResolver.class.getName());
+    public static final String CRD_ENTANDO_COMPONENT_BUNDLE_CRD_YAML = "crd/EntandoComponentBundleCRD.yaml";
 
     static {
         registerCustomKinds();
     }
 
     private final String crdName;
-    private final Class<R> customResourceClass;
-    private final Class<L> customResourceListClass;
-    private final Class<D> doneableCustomResourceClass;
+    private final Class<EntandoComponentBundle> customResourceClass;
+    private final Class<EntandoComponentBundleList> customResourceListClass;
+    private final Class<DoneableEntandoComponentBundle> doneableCustomResourceClass;
     private final String yamlFile;
     private CustomResourceDefinition customResourceDefinition;
 
-    public EntandoCustomResourceResolver(Class<R> customResourceClass, Class<L> listCass, Class<D> doneableClass) {
-        try {
-
-            R r = customResourceClass.getConstructor().newInstance();
-            this.yamlFile = "crd/" + r.getKind() + "CRD.yaml";
-            this.crdName = r.getDefinitionName();
-            this.customResourceClass = customResourceClass;
-            this.customResourceListClass = listCass;
-            this.doneableCustomResourceClass = doneableClass;
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new IllegalStateException(e);
-        }
+    public EntandoComponentBundleCustomResourceResolver() {
+            this.yamlFile = CRD_ENTANDO_COMPONENT_BUNDLE_CRD_YAML;
+            this.crdName = EntandoComponentBundle.CRD_NAME;
+            this.customResourceClass = EntandoComponentBundle.class;
+            this.customResourceListClass = EntandoComponentBundleList.class;
+            this.doneableCustomResourceClass = DoneableEntandoComponentBundle.class;
     }
 
     public static void registerCustomKinds() {
         KubernetesDeserializer.registerCustomKind("entando.org/v1#EntandoComponentBundle", EntandoComponentBundle.class);
     }
 
-    public CustomResourceOperationsImpl<R, L, D> resolveOperation(KubernetesClient client) {
+    public CustomResourceOperationsImpl<EntandoComponentBundle, EntandoComponentBundleList, DoneableEntandoComponentBundle> resolveOperation(
+            KubernetesClient client) {
         try {
             synchronized (this) {
                 if (this.customResourceDefinition == null) {
                     this.customResourceDefinition = loadCrd(client);
                 }
             }
-            CustomResourceOperationsImpl<R, L, D> oper = (CustomResourceOperationsImpl<R, L, D>) client
-                    .customResources(customResourceDefinition, customResourceClass, customResourceListClass, doneableCustomResourceClass);
+            CustomResourceOperationsImpl<EntandoComponentBundle, EntandoComponentBundleList, DoneableEntandoComponentBundle> oper =
+                    (CustomResourceOperationsImpl<EntandoComponentBundle, EntandoComponentBundleList, DoneableEntandoComponentBundle>)
+                            client.customResources(customResourceDefinition, customResourceClass, customResourceListClass, doneableCustomResourceClass);
             int count = 0;
             while (notAvailable(oper, client) && count < 100) {
                 sleep(100);
@@ -129,7 +126,7 @@ public class EntandoCustomResourceResolver<R extends EntandoCustomResource, L ex
         return resourceAsStream;
     }
 
-    private boolean notAvailable(CustomResourceOperationsImpl<R, L, D> oper, KubernetesClient client) {
+    private boolean notAvailable(CustomResourceOperationsImpl<EntandoComponentBundle, EntandoComponentBundleList, DoneableEntandoComponentBundle> oper, KubernetesClient client) {
         //Sometimes it takes a couple of seconds after registration for the resource to become available.
         try {
             String namespaceToUse = client.getNamespace();

@@ -17,7 +17,7 @@
 package org.entando.kubernetes.model.bundle;
 
 import io.fabric8.kubernetes.api.builder.Nested;
-import java.awt.Image;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -96,7 +96,7 @@ public abstract class EntandoComponentBundleSpecFluent<A extends EntandoComponen
        return thisAsA();
     }
 
-    public A addToBundleImages(String imageUrl) {
+    public A addImageUrl(String imageUrl) {
         if (this.images == null) {
             this.images = new ArrayList<>();
         }
@@ -104,17 +104,31 @@ public abstract class EntandoComponentBundleSpecFluent<A extends EntandoComponen
         return thisAsA();
     }
 
-    public TagNested<A> addNewTag() {
-        return new TagNested<>(thisAsA());
+    public ImagesNested<A> withNewImages() {
+        return new ImagesNested<>(thisAsA());
     }
 
-    public A addToTags(EntandoComponentBundleVersion tag) {
-        this.versions.add(new EntandoComponentBundleVersionsBuilder(tag));
+    public A withImageUrls(List<EntandoComponentBundleImage> imageUrls) {
+        this.images = imageUrls;
         return thisAsA();
     }
 
-    public A withTags(List<EntandoComponentBundleVersion> tags) {
-        this.versions = createTagBuilders(tags);
+    public A withVersions(List<EntandoComponentBundleVersion> versionList) {
+        this.versions = versionList.stream().map(EntandoComponentBundleVersionsBuilder::new).collect(Collectors.toList());
+        return thisAsA();
+    }
+
+    public A withNoVersions() {
+        this.versions = new ArrayList<>();
+        return thisAsA();
+    }
+
+    public VersionNested<A> addNewVersion() {
+        return new VersionNested<>(thisAsA());
+    }
+
+    public A addToVersions(EntandoComponentBundleVersion tag) {
+        this.versions.add(new EntandoComponentBundleVersionsBuilder(tag));
         return thisAsA();
     }
 
@@ -136,22 +150,22 @@ public abstract class EntandoComponentBundleSpecFluent<A extends EntandoComponen
                 this.versions.stream().map(EntandoComponentBundleVersionFluent::build).collect(Collectors.toList()));
     }
 
-    public static class TagNested<N extends EntandoComponentBundleSpecFluent> extends
-            EntandoComponentBundleVersionFluent<TagNested<N>> implements Nested<N> {
+    public static class VersionNested<N extends EntandoComponentBundleSpecFluent> extends
+            EntandoComponentBundleVersionFluent<VersionNested<N>> implements Nested<N> {
 
         private final N parentBuilder;
 
-        public TagNested(N parentBuilder) {
+        public VersionNested(N parentBuilder) {
             super();
             this.parentBuilder = parentBuilder;
         }
 
         @SuppressWarnings("unchecked")
         public N and() {
-            return (N) parentBuilder.addToTags(super.build());
+            return (N) parentBuilder.addToVersions(super.build());
         }
 
-        public N endTag() {
+        public N endVersion() {
             return and();
         }
     }
@@ -175,6 +189,33 @@ public abstract class EntandoComponentBundleSpecFluent<A extends EntandoComponen
             return and();
         }
 
+    }
+
+    public static class ImagesNested<N extends EntandoComponentBundleSpecFluent>
+        implements Nested<N> {
+
+        private final N parentBuilder;
+        private List<EntandoComponentBundleImage> imageUrls;
+
+
+        public ImagesNested(N parentBuilder) {
+            this.parentBuilder = parentBuilder;
+            this.imageUrls = new ArrayList<>();
+        }
+
+        public ImagesNested<N> addImageUrl(String imageUrl) {
+            this.imageUrls.add(new EntandoComponentBundleImage(imageUrl.toString()));
+            return this;
+        }
+
+        @Override
+        public N and() {
+            return (N) parentBuilder.withImageUrls(this.imageUrls);
+        }
+
+        public N endImages() {
+            return and();
+        }
     }
 
 }

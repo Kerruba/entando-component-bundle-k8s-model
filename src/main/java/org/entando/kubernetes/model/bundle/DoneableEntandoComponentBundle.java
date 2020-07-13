@@ -17,43 +17,25 @@
 package org.entando.kubernetes.model.bundle;
 
 import io.fabric8.kubernetes.api.builder.Function;
-import java.util.Optional;
-import org.entando.kubernetes.model.AbstractServerStatus;
-import org.entando.kubernetes.model.DoneableEntandoCustomResource;
-import org.entando.kubernetes.model.EntandoCustomResourceStatus;
-import org.entando.kubernetes.model.EntandoDeploymentPhase;
+import io.fabric8.kubernetes.api.model.Doneable;
 
-public class DoneableEntandoComponentBundle extends EntandoComponentBundleFluent<DoneableEntandoComponentBundle> implements
-        DoneableEntandoCustomResource<DoneableEntandoComponentBundle, EntandoComponentBundle> {
+public class DoneableEntandoComponentBundle extends EntandoComponentBundleFluent<DoneableEntandoComponentBundle>
+        implements Doneable<EntandoComponentBundle> {
 
-    private final EntandoCustomResourceStatus status;
     private final Function<EntandoComponentBundle, EntandoComponentBundle> function;
 
     public DoneableEntandoComponentBundle(Function<EntandoComponentBundle, EntandoComponentBundle> function) {
         this.function = function;
-        this.status = new EntandoCustomResourceStatus();
     }
 
     public DoneableEntandoComponentBundle(EntandoComponentBundle resource, Function<EntandoComponentBundle, EntandoComponentBundle> function) {
         super(resource.getSpec(), resource.getMetadata());
-        this.status = Optional.ofNullable(resource.getStatus()).orElse(new EntandoCustomResourceStatus());
         this.function = function;
     }
 
-    @Override
-    public DoneableEntandoComponentBundle withStatus(AbstractServerStatus serverStatus) {
-        this.status.putServerStatus(serverStatus);
-        return this;
-    }
-
-    @Override
-    public DoneableEntandoComponentBundle withPhase(EntandoDeploymentPhase phase) {
-        status.setEntandoDeploymentPhase(phase);
-        return this;
-    }
 
     @Override
     public EntandoComponentBundle done() {
-        return function.apply(new EntandoComponentBundle(metadata.build(), spec.build(), status));
+        return function.apply(new EntandoComponentBundle(metadata.build(), spec.build()));
     }
 }

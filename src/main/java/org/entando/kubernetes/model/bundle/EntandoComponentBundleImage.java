@@ -11,6 +11,10 @@ public class EntandoComponentBundleImage {
     public EntandoComponentBundleImage() {
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public String getUrl() {
         return url;
     }

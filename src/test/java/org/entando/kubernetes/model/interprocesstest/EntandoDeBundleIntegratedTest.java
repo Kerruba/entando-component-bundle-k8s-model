@@ -14,14 +14,22 @@
  *
  */
 
-package org.entando.kubernetes.model;
+package org.entando.kubernetes.model.interprocesstest;
 
-import io.fabric8.kubernetes.api.model.Doneable;
+import io.fabric8.kubernetes.client.AutoAdaptableKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import org.entando.kubernetes.model.AbstractEntandoDeBundleTest;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
 
-public interface DoneableEntandoCustomResource<D extends DoneableEntandoCustomResource,
-        R extends EntandoCustomResource> extends Doneable<R> {
+@Tags({@Tag("inter-process"),@Tag("pre-deployment") })
+public class EntandoDeBundleIntegratedTest extends AbstractEntandoDeBundleTest {
 
-    D withStatus(AbstractServerStatus status);
+    private final KubernetesClient client = new AutoAdaptableKubernetesClient();
 
-    D withPhase(EntandoDeploymentPhase phase);
+    @Override
+    public KubernetesClient getClient() {
+        return client;
+    }
+
 }
