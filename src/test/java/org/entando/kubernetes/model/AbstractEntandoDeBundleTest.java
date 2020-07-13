@@ -50,13 +50,13 @@ public abstract class AbstractEntandoDeBundleTest implements CustomResourceTestU
     private EntandoResourceOperationsRegistry registry;
 
     @BeforeEach
-    public void deleteEntandoDeBundles() {
+    public void deleteAllEntandoComponentBundles() {
         this.registry = new EntandoResourceOperationsRegistry(getClient());
         prepareNamespace(entandoComponentBundles(), NAMESPACE);
     }
 
     @Test
-    public void testCreateEntandoDeBundle() {
+    public void testCreateEntandoComponentBundle() {
         //Given
         EntandoComponentBundle ecb = new EntandoComponentBundleBuilder()
                 .withNewMetadata().withName(CODE)
@@ -117,7 +117,7 @@ public abstract class AbstractEntandoDeBundleTest implements CustomResourceTestU
     }
 
     @Test
-    public void testEditEntandoDeBundle() {
+    public void testEdit() {
         //Given
         EntandoComponentBundle ecb = new EntandoComponentBundleBuilder()
                 .withNewMetadata()

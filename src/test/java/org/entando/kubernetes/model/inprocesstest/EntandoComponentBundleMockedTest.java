@@ -30,7 +30,7 @@ import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 
 @Tags({@Tag("in-process"),@Tag("pre-deployment") })
 @EnableRuleMigrationSupport
-public class EntandoDeBundleMockedTest extends AbstractEntandoDeBundleTest {
+public class EntandoComponentBundleMockedTest extends AbstractEntandoDeBundleTest {
 
     @Rule
     public KubernetesServer server = new KubernetesServer(false, true);
